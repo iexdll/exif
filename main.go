@@ -55,7 +55,7 @@ func main() {
 
 	if orient == "1" {
 		log.Println("Обработка изображения не требуется", path)
-		os.Exit(1)
+		os.Exit(2)
 	}
 
 	fileImg, err := os.Open(path)
