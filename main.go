@@ -15,6 +15,16 @@ func main() {
 	//https://github.com/scottleedavis/go-exif-remove
 	//go run main.go img/jpg/11-tests.jpg
 
+	var err error
+
+	fileLog, err := os.OpenFile("log.txt", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fileLog.Close()
+
+	log.SetOutput(fileLog)
+
 	if len(os.Args) != 2 {
 		log.Println("Не передан файл для обработки")
 		os.Exit(1)
@@ -23,43 +33,41 @@ func main() {
 	path := os.Args[1]
 	pathTo := "imgexif\\" + filepath.Base(path)
 
-	var err error
-
 	file, err := os.Open(path)
 	if err != nil {
-		log.Println("Не удалось открыть файл", err.Error())
+		log.Println("Не удалось открыть файл", path, err.Error())
 		os.Exit(1)
 	}
 	defer file.Close()
 
 	fileExif, err := exif.Decode(file)
 	if err != nil {
-		log.Println("Ошибка получения EXIF информации", err.Error())
+		log.Println("Ошибка получения EXIF информации", path, err.Error())
 		os.Exit(1)
 	}
 
 	orientTiff, err := fileExif.Get(exif.Orientation)
 	if err != nil || orientTiff == nil {
-		log.Println("В EXIF не найдена информация по Orientation")
+		log.Println("В EXIF не найдена информация по Orientation", path)
 		os.Exit(1)
 	}
 	orient := orientTiff.String()
 
 	if orient == "1" {
-		log.Println("Обработка изображения не требуется")
+		log.Println("Обработка изображения не требуется", path)
 		os.Exit(1)
 	}
 
 	fileImg, err := os.Open(path)
 	if err != nil {
-		log.Println("Не удалось открыть файл (второй раз)", err.Error())
+		log.Println("Не удалось открыть файл (второй раз)", path, err.Error())
 		os.Exit(1)
 	}
 	defer fileImg.Close()
 
 	img, err := jpeg.Decode(fileImg)
 	if err != nil {
-		log.Println("Ошибка получения изображения", err.Error())
+		log.Println("Ошибка получения изображения", path, err.Error())
 		os.Exit(1)
 	}
 
@@ -67,7 +75,7 @@ func main() {
 
 	err = imaging.Save(img, pathTo)
 	if err != nil {
-		log.Println("Ошибка сохранения", err.Error())
+		log.Println("Ошибка сохранения", path, err.Error())
 		os.Exit(1)
 	}
 
