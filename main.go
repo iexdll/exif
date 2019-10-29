@@ -14,10 +14,12 @@ func main() {
 
 	//https://github.com/scottleedavis/go-exif-remove
 	//go run main.go img/jpg/11-tests.jpg
+	//git config http.sslVerify false
 
 	var err error
+	dir := "C:\\Tasks\\tmp_exif_jpeg\\"
 
-	fileLog, err := os.OpenFile("log.txt", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	fileLog, err := os.OpenFile(dir+"log.txt", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -31,7 +33,7 @@ func main() {
 	}
 
 	path := os.Args[1]
-	pathTo := "imgexif\\" + filepath.Base(path)
+	pathTo := dir + filepath.Base(path)
 
 	file, err := os.Open(path)
 	if err != nil {
